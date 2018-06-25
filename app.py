@@ -1,4 +1,4 @@
-from flask import Flask, Response
+from flask import Flask, Response, request
 import requests
 import json
 from flask_cors import CORS
@@ -14,9 +14,10 @@ def test():
     return "Ok."
 
 
-@app.route("/search/all/")
+@app.route("/search/all")
 def search():
-    data = perform_search()
+    start_from = request.args.get('start_from');
+    data = perform_search(start_from)
 
     resp = Response(data)
     resp.headers['content-type'] = 'application/json'
