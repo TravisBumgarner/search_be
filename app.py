@@ -2,7 +2,7 @@ from flask import Flask, Response, request
 import requests
 import json
 from flask_cors import CORS
-from elasticsearch_dsl import Search
+from elasticsearch_dsl import Search, Q
 from elasticsearch import Elasticsearch
 
 es = Elasticsearch()
@@ -52,17 +52,23 @@ def stats():
     return be_response
 
 
-@app.route("/search/all")
+@app.route("/search/all", methods=["GET"])
 def search():
     start_from = request.args.get('start_from')
     query = request.args.get('query')
-    beds = request.args.get('beds')
-    baths = request.args.get('baths')
+    number_of_beds = request.args.get('number_of_beds')
+    min_square_feet = request.args.get('min_square_feet')
 
-    index='housing'
+    index='housing4'
 
+    should_queries= [
+        Q("match", city=query),
+        Q("match", state=query),
+    ]
 
-    s = Search(using=es, index=index).query("match", beds=None).query("match", baths=baths)
+    query_combos = Q('bool', should=should_queries)
+
+    s = Search(using=es, index=index).query(query_combos).filter("term", beds=number_of_beds)
 
     res = s.execute()
 
