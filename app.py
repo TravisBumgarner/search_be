@@ -54,7 +54,7 @@ def stats():
 
 @app.route("/search/all", methods=["GET"])
 def search():
-    start_from = request.args.get('start_from')
+    start_from = request.args.get('from')
     query = request.args.get('query')
     number_of_beds = request.args.get('number_of_beds')
     min_square_feet = request.args.get('min_square_feet')
